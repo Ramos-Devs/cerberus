@@ -10,4 +10,7 @@ export function getRequiredEnv(name: string): string {
   return value;
 }
 
-export const environment = getRequiredEnv('ENVIRONMENT');
+export default {
+  environment: getRequiredEnv('ENVIRONMENT'),
+  port: Number(getRequiredEnv('PORT')),
+};

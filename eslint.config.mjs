@@ -27,7 +27,7 @@ export default [
     },
     rules: {
       "prettier/prettier": "error",
-      "no-console": "warn",
+      "no-console": ["error", { "allow": ["debug"] }],
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { args: "none", ignoreRestSiblings: true }
