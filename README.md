@@ -15,6 +15,9 @@ Ejecuta el proyecto compilado desde la carpeta `dist`.
 - `pnpm prepare`  
 Prepara Husky para pre-commits.
 
+- `pnpm test`  
+Ejecuta los test con jest.
+
 ---
 
 ## Linter y Formateo

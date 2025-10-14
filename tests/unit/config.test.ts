@@ -27,6 +27,7 @@ describe("Environment variable validation", () => {
     process.env['EXIST_ENV'] = EXIST_ENV;
 
     const result = getRequiredEnv("EXIST_ENV");
+    
     expect(result).toBe(EXIST_ENV);
   });
 });
