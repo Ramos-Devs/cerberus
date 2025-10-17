@@ -26,6 +26,7 @@ describe('Failed user authentication', () => {
   test.each([
     ['password is missing', { user: 'test@example.com' }],
     ['user is missing', { password: 'pass-example' }],
+    ['user and password is missing', { otherValue: 'value-example' }],
   ])(
     'should return an error when the required %s',
     async (_msg: string, body: Record<string, any>) => {
