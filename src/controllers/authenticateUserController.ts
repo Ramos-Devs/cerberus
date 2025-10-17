@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 
 export const resolveAuthenticateUser = async (req: Request, res: Response): Promise<Response> => {
-  const { body } = req;
+  const { user, password } = req.body || {};
 
-  if (!body) {
-    return res.json({ message: 'Error' });
-  }
+  if (!user || !password) return res.json({ message: 'Error' });
 
   return res.json({ message: 'Success' });
 };
