@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-        "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "cross-env DOTENV_CONFIG_PATH=.env.test NODE_ENV=test jest --runInBand --detectOpenHandles --forceExit",
     "prepare": "husky install"
@@ -19,6 +19,7 @@
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.7.2",
+    "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "cross-env": "^10.1.0",
@@ -31,6 +32,7 @@
     "lint-staged": "^16.2.4",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
