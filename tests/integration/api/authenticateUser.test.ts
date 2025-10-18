@@ -36,4 +36,14 @@ describe('Failed user authentication', () => {
       expect(response.body).toEqual({ message: 'Error' });
     }
   );
+
+  it('should return an error when required fields are empty', async () => {
+    const response = await request(app).post(URL_ENDPOINT).send({
+      user: '',
+      password: '',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: 'Error' });
+  });
 });
