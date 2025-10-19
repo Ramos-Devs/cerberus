@@ -1,13 +1,22 @@
 import request from 'supertest';
 import app from '../../../src/app';
+import { userDefaultHelper } from '../__helpers__/userDataHelper';
+import { prismaMock } from '../__mocks__/dbMock';
 
 const URL_ENDPOINT = '/auth/authenticate-user';
 
 describe('Successful user authentication', () => {
-  it('should return user data when credentials are valid', async () => {
+  it.each([
+    ['username', 'username-example'],
+    ['email', 'example@test.com'],
+  ])('should return user data when credentials are valid using %s', async (_field, identifier) => {
+    const userData = await userDefaultHelper();
+
+    prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
+
     const response = await request(app).post(URL_ENDPOINT).send({
-      user: 'test@example.com',
-      password: 'pass-example',
+      user: identifier,
+      password: userData.password,
     });
 
     expect(response.status).toBe(200);
@@ -27,9 +36,7 @@ describe('Failed user authentication', () => {
     ['password is missing', { user: 'test@example.com' }],
     ['user is missing', { password: 'pass-example' }],
     ['user and password is missing', { otherValue: 'value-example' }],
-  ])(
-    'should return an error when the required %s',
-    async (_msg: string, body: Record<string, any>) => {
+  ])('should return an error when the required %s', async (_msg: string, body: Record<string, any>) => {
       const response = await request(app).post(URL_ENDPOINT).send(body);
 
       expect(response.status).toBe(200);
@@ -41,6 +48,18 @@ describe('Failed user authentication', () => {
     const response = await request(app).post(URL_ENDPOINT).send({
       user: '',
       password: '',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: 'Error' });
+  });
+
+  it('should return an error when a user does not exist', async () => {
+    prismaMock.user.findFirstOrThrow.mockRejectedValue(new Error('User not found'));
+
+    const response = await request(app).post(URL_ENDPOINT).send({
+      user: 'user-not-exist',
+      password: 'password-example',
     });
 
     expect(response.status).toBe(200);

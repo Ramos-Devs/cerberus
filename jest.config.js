@@ -12,4 +12,5 @@ export default {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  setupFilesAfterEnv: ['<rootDir>/tests/integration/__mocks__/dbMock.ts'],
 };
