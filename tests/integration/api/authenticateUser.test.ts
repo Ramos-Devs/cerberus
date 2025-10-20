@@ -14,10 +14,12 @@ describe('Successful user authentication', () => {
 
     prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
 
-    const response = await request(app).post(URL_ENDPOINT).send({
-      user: identifier,
-      password: userData.password,
-    });
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({
+        user: identifier,
+        password: userData.password,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: 'Success' });
@@ -37,7 +39,9 @@ describe('Failed user authentication', () => {
     ['user is missing', { password: 'pass-example' }],
     ['user and password is missing', { otherValue: 'value-example' }],
   ])('should return an error when the required %s', async (_msg: string, body: Record<string, any>) => {
-      const response = await request(app).post(URL_ENDPOINT).send(body);
+      const response = await request(app)
+        .post(URL_ENDPOINT)
+        .send(body);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: 'Error' });
@@ -45,10 +49,12 @@ describe('Failed user authentication', () => {
   );
 
   it('should return an error when required fields are empty', async () => {
-    const response = await request(app).post(URL_ENDPOINT).send({
-      user: '',
-      password: '',
-    });
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({
+        user: '',
+        password: '',
+      });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: 'Error' });
@@ -57,12 +63,30 @@ describe('Failed user authentication', () => {
   it('should return an error when a user does not exist', async () => {
     prismaMock.user.findFirstOrThrow.mockRejectedValue(new Error('User not found'));
 
-    const response = await request(app).post(URL_ENDPOINT).send({
-      user: 'user-not-exist',
-      password: 'password-example',
-    });
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({
+        user: 'user-not-exist',
+        password: 'password-example',
+      });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: 'Error' });
+  });
+
+  it('should return an error when the credentials are invalid', async () => {
+    const userData = await userDefaultHelper();
+
+    prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
+
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({
+        user: userData.username,
+        password: 'pasword-invalid',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: 'Error' });    
   });
 });

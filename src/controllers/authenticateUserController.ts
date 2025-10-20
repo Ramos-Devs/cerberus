@@ -15,7 +15,7 @@ export const resolveAuthenticateUser = async (req: Request, res: Response): Prom
     return res.json({ message: 'Error' });
   }
 
-  if (!userObj) return res.json({ message: 'Error' });
+  if (!userObj || userObj.password !== password) return res.json({ message: 'Error' });
 
   return res.json({ message: 'Success' });
 };
