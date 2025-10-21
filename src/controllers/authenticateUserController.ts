@@ -2,20 +2,61 @@ import { Request, Response } from 'express';
 import { getUserByIdentifier } from '../models/userModel';
 import { User } from '../../generated/prisma';
 
-export const resolveAuthenticateUser = async (req: Request, res: Response): Promise<Response> => {
+export enum ErrorCode {
+  EMPTY_DATA_ERROR = 'EMPTY_DATA_ERROR',
+  INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
+}
+
+export type ResponseData<T = Record<string, unknown>> = {
+  status: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    extra?: Record<string, unknown>;
+  };
+};
+
+export const resolveAuthenticateUser = async (
+  req: Request,
+  res: Response
+): Promise<Response<ResponseData>> => {
   const { user, password } = req.body || {};
 
-  if (!user || !password) return res.json({ message: 'Error' });
+  const requiredFields = ['user', 'password'];
+  const isRequestComplete = requiredFields.every((field) => req.body?.[field]);
+
+  if (!isRequestComplete)
+    return res.json({
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { requiredFields },
+      },
+    });
 
   let userObj: User;
 
   try {
     userObj = await getUserByIdentifier(user);
+
+    if (!userObj || userObj.password !== password)
+      throw Error('The provided password does not match.');
   } catch {
-    return res.json({ message: 'Error' });
+    return res.json({
+      status: false,
+      error: {
+        code: ErrorCode.INVALID_CREDENTIALS_ERROR,
+        message: 'The provided credentials are invalid.',
+      },
+    });
   }
 
-  if (!userObj || userObj.password !== password) return res.json({ message: 'Error' });
-
-  return res.json({ message: 'Success' });
+  return res.json({
+    status: true,
+    data: {
+      displayName: userObj.displayName,
+    },
+  });
 };

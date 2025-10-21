@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../../../src/app';
 import { userDefaultHelper } from '../__helpers__/userDataHelper';
 import { prismaMock } from '../__mocks__/dbMock';
+import { ErrorCode } from '../../../src/controllers/authenticateUserController';
 
 const URL_ENDPOINT = '/auth/authenticate-user';
 
@@ -22,7 +23,12 @@ describe('Successful user authentication', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Success' });
+    expect(response.body).toEqual({ 
+      status: true,
+      data: { 
+        displayName: userData.displayName,
+      }
+    });
   });
 });
 
@@ -31,7 +37,16 @@ describe('Failed user authentication', () => {
     const response = await request(app).post(URL_ENDPOINT);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { 
+          requiredFields: ['user', 'password'],
+        },
+      },
+     });
   });
 
   test.each([
@@ -39,14 +54,22 @@ describe('Failed user authentication', () => {
     ['user is missing', { password: 'pass-example' }],
     ['user and password is missing', { otherValue: 'value-example' }],
   ])('should return an error when the required %s', async (_msg: string, body: Record<string, any>) => {
-      const response = await request(app)
-        .post(URL_ENDPOINT)
-        .send(body);
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send(body);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Error' });
-    }
-  );
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { 
+          requiredFields: ['user', 'password'],
+        },
+      },
+    });
+  });
 
   it('should return an error when required fields are empty', async () => {
     const response = await request(app)
@@ -57,7 +80,16 @@ describe('Failed user authentication', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { 
+          requiredFields: ['user', 'password'],
+        },
+      },
+    });
   });
 
   it('should return an error when a user does not exist', async () => {
@@ -71,7 +103,13 @@ describe('Failed user authentication', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.INVALID_CREDENTIALS_ERROR,
+        message: 'The provided credentials are invalid.',
+      },
+    });
   });
 
   it('should return an error when the credentials are invalid', async () => {
@@ -87,6 +125,12 @@ describe('Failed user authentication', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });    
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.INVALID_CREDENTIALS_ERROR,
+        message: 'The provided credentials are invalid.',
+      },
+    });
   });
 });
