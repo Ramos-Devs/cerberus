@@ -11,7 +11,7 @@ describe('Successful user authentication', () => {
     ['username', 'username-example'],
     ['email', 'example@test.com'],
   ])('should return user data when credentials are valid using %s', async (_field, identifier) => {
-    const userData = await userDefaultHelper();
+    const { userData, password } = await userDefaultHelper();
 
     prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
 
@@ -19,7 +19,7 @@ describe('Successful user authentication', () => {
       .post(URL_ENDPOINT)
       .send({
         user: identifier,
-        password: userData.password,
+        password,
       });
 
     expect(response.status).toBe(200);
@@ -113,7 +113,7 @@ describe('Failed user authentication', () => {
   });
 
   it('should return an error when the credentials are invalid', async () => {
-    const userData = await userDefaultHelper();
+    const { userData } = await userDefaultHelper();
 
     prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
 

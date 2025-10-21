@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { getUserByIdentifier } from '../models/userModel';
 import { User } from '../../generated/prisma';
+import { comparePassword } from '../utils/bcryptsPassword';
 
 export enum ErrorCode {
   EMPTY_DATA_ERROR = 'EMPTY_DATA_ERROR',
@@ -41,8 +42,9 @@ export const resolveAuthenticateUser = async (
   try {
     userObj = await getUserByIdentifier(user);
 
-    if (!userObj || userObj.password !== password)
-      throw Error('The provided password does not match.');
+    const isPasswordValid = await comparePassword(password, userObj.password);
+
+    if (!isPasswordValid) throw Error('The provided password does not match.');
   } catch {
     return res.json({
       status: false,
