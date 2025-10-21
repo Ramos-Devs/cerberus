@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { getUserByIdentifier } from '../models/userModel';
 import { User } from '../../generated/prisma';
 import { comparePassword } from '../utils/bcryptsPassword';
+import { generateToken } from '../utils/jwt';
 
 export enum ErrorCode {
   EMPTY_DATA_ERROR = 'EMPTY_DATA_ERROR',
@@ -55,10 +56,16 @@ export const resolveAuthenticateUser = async (
     });
   }
 
+  const token = generateToken({
+    id: userObj.id,
+    userType: userObj.userType,
+  });
+
   return res.json({
     status: true,
     data: {
       displayName: userObj.displayName,
+      token,
     },
   });
 };

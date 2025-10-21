@@ -3,6 +3,7 @@ import app from '../../../src/app';
 import { userDefaultHelper } from '../__helpers__/userDataHelper';
 import { prismaMock } from '../__mocks__/dbMock';
 import { ErrorCode } from '../../../src/controllers/authenticateUserController';
+import * as jwtUtils from "../../../src/utils/jwt";
 
 const URL_ENDPOINT = '/auth/authenticate-user';
 
@@ -15,6 +16,9 @@ describe('Successful user authentication', () => {
 
     prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
 
+    const token = "mocked_jwt_token"
+    jest.spyOn(jwtUtils, "generateToken").mockReturnValue(token);
+    
     const response = await request(app)
       .post(URL_ENDPOINT)
       .send({
@@ -27,6 +31,7 @@ describe('Successful user authentication', () => {
       status: true,
       data: { 
         displayName: userData.displayName,
+        token,
       }
     });
   });

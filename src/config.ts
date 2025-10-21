@@ -13,4 +13,6 @@ export function getRequiredEnv(name: string): string {
 export default {
   environment: getRequiredEnv('ENVIRONMENT'),
   port: Number(getRequiredEnv('PORT')),
+  jwtSecret: getRequiredEnv('JWT_SECRET'),
+  jwtExpiresIn: getRequiredEnv('JWT_EXPIRES_IN_SEC'),
 };
