@@ -45,7 +45,7 @@ describe('User authentication failed', () => {
     const response = await request(app)
       .post(URL_ENDPOINT)
       .send({});
-      
+
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ 
       status: false,
@@ -59,7 +59,28 @@ describe('User authentication failed', () => {
      });
   });
 
-  test.each([
+  it('should return an error when required fields are empty', async () => {
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({
+        user: '',
+        password: '',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { 
+          requiredFields: ['user', 'password'],
+        },
+      },
+    });
+  });
+
+  it.each([
     ['password is missing', { user: 'test@example.com' }],
     ['user is missing', { password: 'pass-example' }],
     ['user and password is missing', { otherValue: 'value-example' }],
@@ -83,27 +104,6 @@ describe('User authentication failed', () => {
       });
     }
   );
-
-  it('should return an error when required fields are empty', async () => {
-    const response = await request(app)
-      .post(URL_ENDPOINT)
-      .send({
-        user: '',
-        password: '',
-      });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ 
-      status: false,
-      error: {
-        code: ErrorCode.EMPTY_DATA_ERROR,
-        message: 'Required fields are missing from the request body.',
-        extra: { 
-          requiredFields: ['user', 'password'],
-        },
-      },
-    });
-  });
 
   it('should return an error when a user does not exist', async () => {
     prismaMock.user.findFirstOrThrow.mockRejectedValue(
