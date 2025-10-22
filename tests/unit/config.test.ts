@@ -17,9 +17,8 @@ describe('Environment variable validation', () => {
 
     const ENV_NOT_EXIST = 'ENV_NOT_EXIST';
 
-    expect(() => getRequiredEnv(ENV_NOT_EXIST)).toThrow(
-      `Missing required environment variable: ${ENV_NOT_EXIST}`
-    );
+    expect(() => getRequiredEnv(ENV_NOT_EXIST))
+      .toThrow(`Missing required environment variable: ${ENV_NOT_EXIST}`);
   });
 
   it('should return the value if the environment variable exists', () => {

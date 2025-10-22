@@ -10,9 +10,7 @@ export interface JwtPayload {
 }
 
 export const generateToken = (payload: JwtPayload): string => {
-  const options: SignOptions = {
-    expiresIn: JWT_EXPIRES_IN,
-  };
+  const options: SignOptions = { expiresIn: JWT_EXPIRES_IN };
 
   return jwt.sign(payload, JWT_SECRET as jwt.Secret, options);
 };
