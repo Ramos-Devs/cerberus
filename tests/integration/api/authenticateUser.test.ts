@@ -2,16 +2,16 @@ import request from 'supertest';
 import app from '../../../src/app';
 import { userDefaultHelper } from '../__helpers__/userDataHelper';
 import { prismaMock } from '../__mocks__/dbMock';
-import { ErrorCode } from '../../../src/controllers/authenticateUserController';
 import * as jwtUtils from "../../../src/utils/jwt";
+import { ErrorCode } from '../../../src/constants/enums';
 
 const URL_ENDPOINT = '/auth/authenticate-user';
 
-describe('Successful user authentication', () => {
+describe('User authentication successful', () => {
   it.each([
     ['username', 'username-example'],
     ['email', 'example@test.com'],
-  ])('should return user data when credentials are valid using %s', async (_field, identifier) => {
+  ])('should return data when credentials are valid using %s', async (_field, identifier) => {
     const { userData, password } = await userDefaultHelper();
 
     prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
@@ -37,7 +37,7 @@ describe('Successful user authentication', () => {
   });
 });
 
-describe('Failed user authentication', () => {
+describe('User authentication failed', () => {
   it('should return an error when the requets body is empty', async () => {
     const response = await request(app).post(URL_ENDPOINT);
 
