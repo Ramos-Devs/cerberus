@@ -32,6 +32,7 @@ export const resolveAuthenticateUser = async (
 
     if (!isPasswordValid) throw Error('The provided password does not match.');
   } catch {
+    // TODO: validar errores independientes, hacer pruebas manuales
     return formatErrorResponse(res, {
       errorCode: ErrorCode.INVALID_CREDENTIALS_ERROR,
       message: 'The provided credentials are invalid.',
