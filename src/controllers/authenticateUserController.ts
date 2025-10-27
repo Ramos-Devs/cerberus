@@ -6,6 +6,8 @@ import { generateToken } from '../utils/jwt';
 import { ErrorCode } from '../constants/enums';
 import { ResponseData } from '../types/response';
 import { errorResponse as formatErrorResponse } from '../utils/formatResponse';
+import { PrismaClientKnownRequestError } from '../../generated/prisma/runtime/library';
+import { InvalidCredentialsError } from '../constants/exceptions';
 
 export const resolveAuthenticateUser = async (
   req: Request,
@@ -30,12 +32,22 @@ export const resolveAuthenticateUser = async (
 
     const isPasswordValid = await isPasswordMatch(password, userObj.password);
 
-    if (!isPasswordValid) throw Error('The provided password does not match.');
-  } catch {
-    // TODO: validar errores independientes, hacer pruebas manuales
+    if (!isPasswordValid)
+      throw new InvalidCredentialsError('The provided password does not match.');
+  } catch (err: unknown) {
+    if (
+      (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') ||
+      err instanceof InvalidCredentialsError
+    ) {
+      return formatErrorResponse(res, {
+        errorCode: ErrorCode.INVALID_CREDENTIALS_ERROR,
+        message: 'The provided credentials are invalid.',
+      });
+    }
+
     return formatErrorResponse(res, {
-      errorCode: ErrorCode.INVALID_CREDENTIALS_ERROR,
-      message: 'The provided credentials are invalid.',
+      errorCode: ErrorCode.NOT_FOUND_ERROR,
+      message: 'Resource not found.',
     });
   }
 

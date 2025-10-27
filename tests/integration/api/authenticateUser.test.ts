@@ -4,6 +4,7 @@ import { userDefaultHelper } from '../__helpers__/userDataHelper';
 import { prismaMock } from '../__mocks__/dbMock';
 import * as jwtUtils from "../../../src/utils/jwt";
 import { ErrorCode } from '../../../src/constants/enums';
+import { PrismaClientKnownRequestError } from '../../../generated/prisma/runtime/library';
 
 const URL_ENDPOINT = '/auth/authenticate-user';
 
@@ -106,9 +107,12 @@ describe('User authentication failed', () => {
   );
 
   it('should return an error when a user does not exist', async () => {
-    prismaMock.user.findFirstOrThrow.mockRejectedValue(
-      new Error('User not found')
+    const prismaError = new PrismaClientKnownRequestError(
+      'User not found',
+      { code: 'P2025', clientVersion: '5.0.0' }
     );
+    
+    prismaMock.user.findFirstOrThrow.mockRejectedValue(prismaError);
 
     const response = await request(app)
       .post(URL_ENDPOINT)
@@ -148,4 +152,31 @@ describe('User authentication failed', () => {
       },
     });
   });
+
+  it(
+    'should return an error when validating credentials there was an unhandled error', 
+    async () => {
+      const { userData } = await userDefaultHelper();
+
+      prismaMock.user.findFirstOrThrow.mockRejectedValue(
+        new Error('Unexpected failure')
+      );
+
+      const response = await request(app)
+        .post(URL_ENDPOINT)
+        .send({
+          user: userData.username,
+          password: userData.password,
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ 
+        status: false,
+        error: {
+          code: ErrorCode.NOT_FOUND_ERROR,
+          message: 'Resource not found.',
+        },
+      });
+    }
+  );
 });
