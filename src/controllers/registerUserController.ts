@@ -20,6 +20,7 @@ export const resolveRegisterUser = async (req: Request, res: Response): Promise<
   } catch (err) {
     if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002')
       // const fields = (err.meta as any)?.['target'];
+      // Error cuando unique field exist
       return res.json({ message: 'Error' });
   }
 

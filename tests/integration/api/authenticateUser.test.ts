@@ -53,9 +53,7 @@ describe('User authentication failed', () => {
       error: {
         code: ErrorCode.EMPTY_DATA_ERROR,
         message: 'Required fields are missing from the request body.',
-        extra: { 
-          requiredFields: ['user', 'password'],
-        },
+        extra: { invalidFields: ['user: string', 'password: string'] },
       },
      });
   });
@@ -74,37 +72,46 @@ describe('User authentication failed', () => {
       error: {
         code: ErrorCode.EMPTY_DATA_ERROR,
         message: 'Required fields are missing from the request body.',
-        extra: { 
-          requiredFields: ['user', 'password'],
-        },
+        extra: { invalidFields: ['user: string', 'password: string'] },
       },
     });
   });
 
   it.each([
-    ['password is missing', { user: 'test@example.com' }],
-    ['user is missing', { password: 'pass-example' }],
-    ['user and password is missing', { otherValue: 'value-example' }],
-  ])(
-    'should return an error when the required %s', 
-    async (_msg: string, body: Record<string, any>) => {
-      const response = await request(app)
-        .post(URL_ENDPOINT)
-        .send(body);
+    [
+      'password is missing', 
+      { user: 'test@example.com' }, 
+      ['password: string']
+    ],
+    [
+      'user is missing', 
+      { password: 'pass-example' }, 
+      ['user: string']
+    ],
+    [
+      'user and password is missing', 
+      { otherValue: 'value-example' }, 
+      ['user: string', 'password: string']
+    ],
+  ])('should return an error when the required %s', async (
+    _msg: string, 
+    body: Record<string, any>,
+    expectedInvalidFields: string[]
+  ) => {
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send(body);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 
-        status: false,
-        error: {
-          code: ErrorCode.EMPTY_DATA_ERROR,
-          message: 'Required fields are missing from the request body.',
-          extra: { 
-            requiredFields: ['user', 'password'],
-          },
-        },
-      });
-    }
-  );
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { invalidFields: expectedInvalidFields },
+      },
+    });
+  });
 
   it('should return an error when a user does not exist', async () => {
     const prismaError = new PrismaClientKnownRequestError(
@@ -179,4 +186,55 @@ describe('User authentication failed', () => {
       });
     }
   );
+
+  it.each([
+    [
+      'user is a number', 
+      { user: 12345, password: 'valid-password' }, 
+      ['user: string']
+    ],
+    [
+      'user is a boolean', 
+      { user: true, password: 'valid-password' },
+      ['user: string']
+    ],
+    [
+      'user is a JSON object', 
+      { user: { name: 'john' }, password: 'valid-password' }, 
+      ['user: string']
+    ],
+    [
+      'password is a number', 
+      { user: 'user@example.com', password: 12345 }, 
+      ['password: string']
+    ],
+    [
+      'password is a boolean', 
+      { user: 'user@example.com', password: false }, 
+      ['password: string']
+    ],
+    [
+      'password is a JSON object', 
+      { user: 'user@example.com', password: { pass: '123' } }, 
+      ['password: string']
+    ],
+  ])('should return an error when %s', async (
+    _msg: string, 
+    body: Record<string, any>, 
+    expectedInvalidFields: string[]
+  ) => {
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send(body);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message:'Required fields are missing from the request body.',
+        extra: { invalidFields: expectedInvalidFields },
+      },
+    });
+  });
 });
