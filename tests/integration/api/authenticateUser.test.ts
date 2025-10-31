@@ -161,7 +161,7 @@ describe('User authentication failed', () => {
   });
 
   it(
-    'should return an error when validating credentials there was an unhandled error', 
+    'should return an error when validating credentials there was an unhandled error',
     async () => {
       const { userData } = await userDefaultHelper();
 

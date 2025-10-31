@@ -69,5 +69,54 @@ describe('User registration failed', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: 'Error' });
   });
+
+  it('should return an error when the required fields is missing', async () => {
+    // ?Fields
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({ 
+        username: 'test.example',
+        otherValue: 'value-example',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: 'Error' });
+  });
+
+  it(
+    'It should return an error when creating a user results in an unexpected error', 
+    async () => {
+      prismaMock.user.create.mockRejectedValue(
+        new Error('Unexpected failure')
+      );
+
+      const response = await request(app)
+        .post(URL_ENDPOINT)
+        .send({
+          username: 'test.example',
+          email: 'test@example.com',
+          displayName: 'Test Example',
+          password: 'password-example',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ message: 'Error' });
+    }
+  );
+
+  it('should return an error when fields is other data type', async () => {
+    // types: number, booolean, json
+    const response = await request(app)
+        .post(URL_ENDPOINT)
+        .send({
+          username: 12345,
+          email: 12345,
+          displayName: 12345,
+          password: 12345,
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ message: 'Error' });
+  });
 });
  
