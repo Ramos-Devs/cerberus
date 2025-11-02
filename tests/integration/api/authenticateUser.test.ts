@@ -13,15 +13,17 @@ describe('User authentication successful', () => {
     ['username', 'username-example'],
     ['email', 'example@test.com'],
   ])(
-    'should return data when credentials are valid using %s', 
-    async (_field, identifier) => {
+    'should return data when credentials are valid using %s', async (
+      _field, 
+      identifier
+    ) => {
       const { userData, password } = await userDefaultHelper();
 
       prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
 
       const token = "mocked_jwt_token"
       jest.spyOn(jwtUtils, "generateToken").mockReturnValue(token);
-    
+
       const response = await request(app)
         .post(URL_ENDPOINT)
         .send({
@@ -81,42 +83,44 @@ describe('User authentication failed', () => {
     [
       'password is missing', 
       { user: 'test@example.com' }, 
-      ['password: string']
-    ],
+      ['password: string'],
+    ], 
     [
       'user is missing', 
       { password: 'pass-example' }, 
-      ['user: string']
+      ['user: string'],
     ],
     [
       'user and password is missing', 
       { otherValue: 'value-example' }, 
-      ['user: string', 'password: string']
+      ['user: string', 'password: string'],
     ],
-  ])('should return an error when the required %s', async (
-    _msg: string, 
-    payload: Record<string, any>,
-    expectedInvalidFields: string[]
-  ) => {
-    const response = await request(app)
-      .post(URL_ENDPOINT)
-      .send(payload);
+  ])(
+    'should return an error when the required %s', async (
+      _msg: string,
+      payload: Record<string, any>,
+      expectedInvalidFields: string[]
+    ) => {
+      const response = await request(app)
+        .post(URL_ENDPOINT)
+        .send(payload);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ 
-      status: false,
-      error: {
-        code: ErrorCode.EMPTY_DATA_ERROR,
-        message: 'Required fields are missing from the request body.',
-        extra: { invalidFields: expectedInvalidFields },
-      },
-    });
-  });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ 
+        status: false,
+        error: {
+          code: ErrorCode.EMPTY_DATA_ERROR,
+          message: 'Required fields are missing from the request body.',
+          extra: { invalidFields: expectedInvalidFields },
+        },
+      });
+    }
+  );
 
   it('should return an error when a user does not exist', async () => {
     const prismaError = new PrismaClientKnownRequestError(
       'User not found',
-      { code: 'P2025', clientVersion: '5.0.0' }
+      { code: 'P2025', clientVersion: '5.0.0' },
     );
     
     prismaMock.user.findFirstOrThrow.mockRejectedValue(prismaError);
@@ -161,7 +165,7 @@ describe('User authentication failed', () => {
   });
 
   it(
-    'should return an error when validating credentials there was an unhandled error',
+    'should return an error when validating credentials there was an unhandled error', 
     async () => {
       const { userData } = await userDefaultHelper();
 
@@ -191,32 +195,32 @@ describe('User authentication failed', () => {
     [
       'user is a number', 
       { user: 12345, password: 'valid-password' }, 
-      ['user: string']
+      ['user: string'],
     ],
     [
       'user is a boolean', 
       { user: true, password: 'valid-password' },
-      ['user: string']
+      ['user: string'],
     ],
     [
       'user is a JSON object', 
       { user: { name: 'john' }, password: 'valid-password' }, 
-      ['user: string']
+      ['user: string'],
     ],
     [
       'password is a number', 
       { user: 'user@example.com', password: 12345 }, 
-      ['password: string']
+      ['password: string'],
     ],
     [
       'password is a boolean', 
       { user: 'user@example.com', password: false }, 
-      ['password: string']
+      ['password: string'],
     ],
     [
       'password is a JSON object', 
       { user: 'user@example.com', password: { pass: '123' } }, 
-      ['password: string']
+      ['password: string'],
     ],
   ])('should return an error when %s', async (
     _msg: string, 

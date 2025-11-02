@@ -38,14 +38,7 @@ export const resolveRegisterUser = async (req: Request, res: Response): Promise<
     });
   }
 
-  // -->
-  const { username, email, displayName, password } = req.body || {};
-
-  const requiredFields = ['username', 'email', 'displayName', 'password'];
-
-  const isRequestComplete = requiredFields.every((field) => req.body?.[field]);
-
-  if (!isRequestComplete) return res.json({ message: 'Error' });
+  const { username, email, displayName, password } = req.body;
 
   const userType = UserType.USER;
 
@@ -55,10 +48,22 @@ export const resolveRegisterUser = async (req: Request, res: Response): Promise<
     // TODO: tipar datos en el model
     userObj = await createNewUser(username, email, displayName, password, userType);
   } catch (err) {
-    if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002')
-      // const fields = (err.meta as any)?.['target'];
-      // Error cuando unique field exist
-      return res.json({ message: 'Error' });
+    if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002') {
+      const meta = err.meta as { target?: string[] };
+      const fields = meta?.target ?? [];
+
+      return res.status(200).json({
+        status: false,
+        error: {
+          code: ErrorCode.DATA_ENTRY_ERROR,
+          message: 'The data entered already exists in the system.',
+          extra: {
+            invalidFields: fields.map((field) => fieldsRequired[field]),
+          },
+        },
+      });
+    }
+
     return res.json({ message: 'Error' });
   }
 

@@ -78,15 +78,30 @@ describe('User registration failed', () => {
     });
   });
 
-  it('should return an error when unique fields already exist', async () => {
+  it.each([
+    [
+      'username already exist', 
+      'username', 
+      ['username: string'],
+    ], 
+    [
+      'email already exist', 
+      'email', 
+      ['email: string'],
+    ],
+  ])('should return an error when unique %s', async (
+    _msg: string, 
+    fieldName: string, 
+    expectedInvalidFields: string[]
+  ) => {
     const prismaError = new PrismaClientKnownRequestError(
-      'Unique constraint failed on the fields: (`username`)',
+      `Unique constraint failed on the fields: (\`${fieldName}\`)`,
       {
         code: 'P2002',
         clientVersion: '6.17.1',
-        meta: { modelName: 'User', target: ['username'] },
+        meta: { modelName: 'User', target: [fieldName] },
       }
-    ); // TODO: Automatizar para los campos unicos en el modelo (username, email)
+    );
 
     prismaMock.user.create.mockRejectedValue(prismaError);
 
@@ -100,9 +115,17 @@ describe('User registration failed', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });
+    expect(response.body).toEqual({  
+      status: false,
+      error: {
+        code: ErrorCode.DATA_ENTRY_ERROR,
+        message: 'The data entered already exists in the system.',
+        extra: { invalidFields: expectedInvalidFields },
+      },
+    });
   });
 
+  // --->
   it('should return an error when the required fields is missing', async () => {
     // ?Fields
     const response = await request(app)
