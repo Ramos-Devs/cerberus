@@ -2,22 +2,30 @@ import request from 'supertest';
 import app from '../../../src/app';
 import { prismaMock } from '../__mocks__/dbMock';
 import { PrismaClientKnownRequestError } from '../../../generated/prisma/runtime/library';
+import { userDefaultHelper } from '../__helpers__/userDataHelper';
 
 const URL_ENDPOINT = '/auth/register-user';
 
 describe('User registration successful', () => {
   it('should return data when a user registers', async () => {
+    const { userData } = await userDefaultHelper();
+    
+    prismaMock.user.create.mockResolvedValue(userData);
+
     const response = await request(app)
       .post(URL_ENDPOINT)
       .send({
-        username: 'test.example',
-        email: 'test@example.com',
-        displayName: 'Test Example',
-        password: 'password-example',
-      });
+      username: 'test.example',
+      email: 'test@example.com',
+      displayName: userData.displayName,
+      password: 'password-example',
+    });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Success' });
+    expect(response.body).toEqual({ 
+      status: true,
+      data: { displayName: userData.displayName }
+     });
   });
 });
 
@@ -84,7 +92,7 @@ describe('User registration failed', () => {
   });
 
   it(
-    'It should return an error when creating a user results in an unexpected error', 
+    'should return an error when creating a user results in an unexpected error', 
     async () => {
       prismaMock.user.create.mockRejectedValue(
         new Error('Unexpected failure')

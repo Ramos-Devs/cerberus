@@ -95,12 +95,12 @@ describe('User authentication failed', () => {
     ],
   ])('should return an error when the required %s', async (
     _msg: string, 
-    body: Record<string, any>,
+    payload: Record<string, any>,
     expectedInvalidFields: string[]
   ) => {
     const response = await request(app)
       .post(URL_ENDPOINT)
-      .send(body);
+      .send(payload);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ 
@@ -220,12 +220,12 @@ describe('User authentication failed', () => {
     ],
   ])('should return an error when %s', async (
     _msg: string, 
-    body: Record<string, any>, 
+    payload: Record<string, any>, 
     expectedInvalidFields: string[]
   ) => {
     const response = await request(app)
       .post(URL_ENDPOINT)
-      .send(body);
+      .send(payload);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
