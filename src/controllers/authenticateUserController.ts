@@ -5,7 +5,7 @@ import { isPasswordMatch } from '../utils/bcryptsPassword';
 import { generateToken } from '../utils/jwt';
 import { ErrorCode } from '../constants/enums';
 import { ResponseData } from '../types/response';
-import { errorResponse as formatErrorResponse } from '../utils/formatResponse';
+import { formatErrorResponse } from '../utils/formatResponse';
 import { PrismaClientKnownRequestError } from '../../generated/prisma/runtime/library';
 import { InvalidCredentialsError } from '../constants/exceptions';
 import z from 'zod';

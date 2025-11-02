@@ -8,7 +8,7 @@ interface ErrorOptions {
   extra?: Record<string, unknown>;
 }
 
-export const errorResponse = (
+export const formatErrorResponse = (
   res: Response,
   { errorCode, message, extra }: ErrorOptions
 ): Response<ResponseData> => {

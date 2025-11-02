@@ -3,6 +3,7 @@ import app from '../../../src/app';
 import { prismaMock } from '../__mocks__/dbMock';
 import { PrismaClientKnownRequestError } from '../../../generated/prisma/runtime/library';
 import { userDefaultHelper } from '../__helpers__/userDataHelper';
+import { ErrorCode } from '../../../src/constants/enums';
 
 const URL_ENDPOINT = '/auth/register-user';
 
@@ -25,7 +26,7 @@ describe('User registration successful', () => {
     expect(response.body).toEqual({ 
       status: true,
       data: { displayName: userData.displayName }
-     });
+    });
   });
 });
 
@@ -36,7 +37,19 @@ describe('User registration failed', () => {
       .send({});
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });
+    expect(response.body).toEqual({  
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { invalidFields: [
+          'username: string', 
+          'email: string',
+          'displayName: string',
+          'password: string'
+        ]},
+      },
+    });
   });
 
   it('should return an error when required fields are empty', async () => {
@@ -49,8 +62,20 @@ describe('User registration failed', () => {
         password: '',
       });
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Error' });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({  
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { invalidFields: [
+          'username: string', 
+          'email: string',
+          'displayName: string',
+          'password: string'
+        ]},
+      },
+    });
   });
 
   it('should return an error when unique fields already exist', async () => {
@@ -74,8 +99,8 @@ describe('User registration failed', () => {
         password: 'password-example',
       });
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Error' });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: 'Error' });
   });
 
   it('should return an error when the required fields is missing', async () => {
@@ -88,7 +113,18 @@ describe('User registration failed', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Error' });
+    expect(response.body).toEqual({  
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { invalidFields: [
+          'email: string',
+          'displayName: string',
+          'password: string'
+        ]},
+      },
+    });
   });
 
   it(
@@ -123,8 +159,20 @@ describe('User registration failed', () => {
           password: 12345,
         });
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Error' });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({  
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { invalidFields: [
+          'username: string', 
+          'email: string',
+          'displayName: string',
+          'password: string'
+        ]},
+      },
+    });
   });
 });
  

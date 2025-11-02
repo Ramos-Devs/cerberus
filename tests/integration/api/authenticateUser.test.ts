@@ -13,7 +13,7 @@ describe('User authentication successful', () => {
     ['username', 'username-example'],
     ['email', 'example@test.com'],
   ])(
-    'should return data when credentials are valid using %s',
+    'should return data when credentials are valid using %s', 
     async (_field, identifier) => {
       const { userData, password } = await userDefaultHelper();
 
@@ -36,7 +36,7 @@ describe('User authentication successful', () => {
           displayName: userData.displayName,
           token,
         }
-     });
+      });
     }
   );
 });
@@ -55,7 +55,7 @@ describe('User authentication failed', () => {
         message: 'Required fields are missing from the request body.',
         extra: { invalidFields: ['user: string', 'password: string'] },
       },
-     });
+    });
   });
 
   it('should return an error when required fields are empty', async () => {
