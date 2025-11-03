@@ -39,11 +39,11 @@ export const resolveAuthenticateUser = async (
     });
   }
 
-  const { user, password } = parsed.data;
-
   let userObj: User;
 
   try {
+    const { user, password } = parsed.data;
+
     userObj = await getUserByIdentifier(user);
 
     const isPasswordValid = await isPasswordMatch(password, userObj.password);

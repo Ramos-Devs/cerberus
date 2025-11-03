@@ -41,15 +41,15 @@ export const resolveRegisterUser = async (
     });
   }
 
-  const { username, email, displayName, password } = req.body;
-
-  const userType = UserType.USER;
-
   let userObj;
 
   try {
-    // TODO: tipar datos en el model
-    userObj = await createNewUser(username, email, displayName, password, userType);
+    const userType = UserType.USER;
+
+    userObj = await createNewUser({
+      ...parsed.data,
+      userType,
+    });
   } catch (err) {
     if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002') {
       const meta = err.meta as { target?: string[] };

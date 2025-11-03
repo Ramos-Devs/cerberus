@@ -9,20 +9,14 @@ export const getUserByIdentifier = async (identifier: string): Promise<User> => 
   });
 };
 
-export const createNewUser = async (
-  username: string,
-  email: string,
-  displayName: string,
-  password: string,
-  userType: string
-): Promise<User> => {
-  return prisma.user.create({
-    data: {
-      username,
-      email,
-      displayName,
-      password,
-      userType,
-    },
-  });
+interface newUserData {
+  username: string;
+  email: string;
+  displayName: string;
+  password: string;
+  userType: string;
+}
+
+export const createNewUser = async (data: newUserData): Promise<User> => {
+  return prisma.user.create({ data: data });
 };
