@@ -186,7 +186,6 @@ describe('User registration failed', () => {
     });
   });
 
-  // --->
   it(
     'should return an error when creating a user results in an unexpected error', 
     async () => {
@@ -204,7 +203,13 @@ describe('User registration failed', () => {
         });
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Error' });
+      expect(response.body).toEqual({ 
+        status: false,
+        error: {
+          code: ErrorCode.NOT_FOUND_ERROR,
+          message: 'Resource not found.',
+        },
+      });
     }
   );
 

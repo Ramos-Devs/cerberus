@@ -64,7 +64,10 @@ export const resolveRegisterUser = async (req: Request, res: Response): Promise<
       });
     }
 
-    return res.json({ message: 'Error' });
+    return formatErrorResponse(res, {
+      errorCode: ErrorCode.NOT_FOUND_ERROR,
+      message: 'Resource not found.',
+    });
   }
 
   return res.json({
