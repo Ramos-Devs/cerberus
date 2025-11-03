@@ -213,16 +213,41 @@ describe('User registration failed', () => {
     }
   );
 
-  it('should return an error when fields is other data type', async () => {
-    // types: number, booolean, json
+  it.each([
+    [
+      'fields is a number', 
+      {
+        username: 12345,
+        email: 12345,
+        displayName: 12345,
+        password: 12345,
+      },
+    ],
+    [
+      'fields is a boolean', 
+      {
+        username: true,
+        email: false,
+        displayName: true,
+        password: false,
+      },
+    ],
+    [
+      'fields is a JSON object', 
+      {
+        username: { value: 'value' },
+        email: { value: 'value' },
+        displayName: { value: 'value' },
+        password: { value: 'value' },
+      },
+    ],
+  ])('should return an error when %s', async (
+    _msg,
+    payload: Record<string, any>, 
+  ) => {
     const response = await request(app)
-        .post(URL_ENDPOINT)
-        .send({
-          username: 12345,
-          email: 12345,
-          displayName: 12345,
-          password: 12345,
-        });
+      .post(URL_ENDPOINT)
+      .send(payload);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({  
@@ -234,7 +259,7 @@ describe('User registration failed', () => {
           'username: string', 
           'email: string',
           'displayName: string',
-          'password: string'
+          'password: string',
         ]},
       },
     });

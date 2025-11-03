@@ -4,6 +4,7 @@ import { createNewUser } from '../models/userModel';
 import { PrismaClientKnownRequestError } from '../../generated/prisma/runtime/library';
 import z from 'zod';
 import { formatErrorResponse } from '../utils/formatResponse';
+import { ResponseData } from '../types/response';
 
 const UserSchema = z.object({
   username: z.string().min(1, 'The "username" field is required and must be a non-empty string.'),
@@ -14,8 +15,10 @@ const UserSchema = z.object({
   password: z.string().min(1, 'The "password" field is required and must be a non-empty string.'),
 });
 
-// Return response data
-export const resolveRegisterUser = async (req: Request, res: Response): Promise<Response> => {
+export const resolveRegisterUser = async (
+  req: Request,
+  res: Response
+): Promise<Response<ResponseData>> => {
   const fieldsRequired: Record<string, string> = {
     username: 'username: string',
     email: 'email: string',
