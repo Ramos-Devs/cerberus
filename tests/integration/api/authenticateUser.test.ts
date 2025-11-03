@@ -12,35 +12,34 @@ describe('User authentication successful', () => {
   it.each([
     ['username', 'username-example'],
     ['email', 'example@test.com'],
-  ])(
-    'should return data when credentials are valid using %s', async (
-      _field, 
-      identifier
-    ) => {
-      const { userData, password } = await userDefaultHelper();
+  ])('should return data when credentials are valid using %s', async (
+    _field, 
+    identifier,
+  ) => {
+    const { userData, password } = await userDefaultHelper();
 
-      prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
+    prismaMock.user.findFirstOrThrow.mockResolvedValue(userData);
 
-      const token = "mocked_jwt_token"
-      jest.spyOn(jwtUtils, "generateToken").mockReturnValue(token);
+    const token = "mocked_jwt_token";
+    
+    jest.spyOn(jwtUtils, "generateToken").mockReturnValue(token);
 
-      const response = await request(app)
-        .post(URL_ENDPOINT)
-        .send({
-          user: identifier,
-          password,
-        });
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 
-        status: true,
-        data: { 
-          displayName: userData.displayName,
-          token,
-        }
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send({
+        user: identifier,
+        password,
       });
-    }
-  );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ 
+      status: true,
+      data: { 
+        displayName: userData.displayName,
+        token,
+      },
+    });
+  });
 });
 
 describe('User authentication failed', () => {
@@ -95,27 +94,25 @@ describe('User authentication failed', () => {
       { otherValue: 'value-example' }, 
       ['user: string', 'password: string'],
     ],
-  ])(
-    'should return an error when the required %s', async (
-      _msg: string,
-      payload: Record<string, any>,
-      expectedInvalidFields: string[]
-    ) => {
-      const response = await request(app)
-        .post(URL_ENDPOINT)
-        .send(payload);
+  ])('should return an error when the required %s', async (
+    _msg: string,
+    payload: Record<string, any>,
+    expectedInvalidFields: string[],
+  ) => {
+    const response = await request(app)
+      .post(URL_ENDPOINT)
+      .send(payload);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 
-        status: false,
-        error: {
-          code: ErrorCode.EMPTY_DATA_ERROR,
-          message: 'Required fields are missing from the request body.',
-          extra: { invalidFields: expectedInvalidFields },
-        },
-      });
-    }
-  );
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ 
+      status: false,
+      error: {
+        code: ErrorCode.EMPTY_DATA_ERROR,
+        message: 'Required fields are missing from the request body.',
+        extra: { invalidFields: expectedInvalidFields },
+      },
+    });
+  });
 
   it('should return an error when a user does not exist', async () => {
     const prismaError = new PrismaClientKnownRequestError(
@@ -225,7 +222,7 @@ describe('User authentication failed', () => {
   ])('should return an error when %s', async (
     _msg: string, 
     payload: Record<string, any>, 
-    expectedInvalidFields: string[]
+    expectedInvalidFields: string[],
   ) => {
     const response = await request(app)
       .post(URL_ENDPOINT)

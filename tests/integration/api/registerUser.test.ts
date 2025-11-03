@@ -25,7 +25,7 @@ describe('User registration successful', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ 
       status: true,
-      data: { displayName: userData.displayName }
+      data: { displayName: userData.displayName },
     });
   });
 });
@@ -46,7 +46,7 @@ describe('User registration failed', () => {
           'username: string', 
           'email: string',
           'displayName: string',
-          'password: string'
+          'password: string',
         ]},
       },
     });
@@ -72,7 +72,7 @@ describe('User registration failed', () => {
           'username: string', 
           'email: string',
           'displayName: string',
-          'password: string'
+          'password: string',
         ]},
       },
     });
@@ -92,7 +92,7 @@ describe('User registration failed', () => {
   ])('should return an error when unique %s', async (
     _msg: string, 
     fieldName: string, 
-    expectedInvalidFields: string[]
+    expectedInvalidFields: string[],
   ) => {
     const prismaError = new PrismaClientKnownRequestError(
       `Unique constraint failed on the fields: (\`${fieldName}\`)`,
@@ -125,15 +125,55 @@ describe('User registration failed', () => {
     });
   });
 
-  // --->
-  it('should return an error when the required fields is missing', async () => {
-    // ?Fields
+  it.each([
+    [
+      'username is missing', 
+      {
+        otherValue: 'test.example',
+        email: 'test@example.com',
+        displayName: 'Test Example',
+        password: 'password-example',
+      }, 
+      ['username: string'],
+    ],
+    [
+      'email is missing', 
+      {
+        otherValue: 'test@example.com',
+        username: 'test.example',
+        displayName: 'Test Example',
+        password: 'password-example',
+      }, 
+      ['email: string'],
+    ],
+    [
+      'displayName is missing', 
+      {
+        email: 'test@example.com',
+        username: 'test.example',
+        otherValue: 'Test Example',
+        password: 'password-example',
+      }, 
+      ['displayName: string'],
+    ],
+    [
+      'password is missing', 
+      {
+        email: 'test@example.com',
+        username: 'test.example',
+        displayName: 'Test Example',
+        otherValue: 'password-example',
+      }, 
+      ['password: string'],
+    ],
+  ])('should return an error when the required %s', async (
+    _msg: string, 
+    payload: Record<string, any>, 
+    expectedInvalidFields: string[],
+  ) => {
     const response = await request(app)
       .post(URL_ENDPOINT)
-      .send({ 
-        username: 'test.example',
-        otherValue: 'value-example',
-      });
+      .send(payload);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({  
@@ -141,15 +181,12 @@ describe('User registration failed', () => {
       error: {
         code: ErrorCode.EMPTY_DATA_ERROR,
         message: 'Required fields are missing from the request body.',
-        extra: { invalidFields: [
-          'email: string',
-          'displayName: string',
-          'password: string'
-        ]},
+        extra: { invalidFields: expectedInvalidFields },
       },
     });
   });
 
+  // --->
   it(
     'should return an error when creating a user results in an unexpected error', 
     async () => {
