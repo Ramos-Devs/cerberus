@@ -8,7 +8,8 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "cross-env DOTENV_CONFIG_PATH=.env.test NODE_ENV=test jest --runInBand --detectOpenHandles --forceExit --verbose",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "script": "tsx -r dotenv/config"
   },
   "keywords": [],
   "author": "Ramos",

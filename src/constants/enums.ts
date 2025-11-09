@@ -1,5 +1,6 @@
 export enum UserType {
   USER = 'user',
+  SUPERADMIN = 'superadmin',
 }
 
 export enum ErrorCode {
