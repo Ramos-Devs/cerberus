@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "test": "cross-env DOTENV_CONFIG_PATH=.env.test NODE_ENV=test jest --runInBand --detectOpenHandles --forceExit --verbose",
+    "test": "cross-env DOTENV_CONFIG_PATH=.env  NODE_ENV=test jest --runInBand --detectOpenHandles --forceExit --verbose",
     "prepare": "husky install",
     "script": "tsx -r dotenv/config"
   },
@@ -26,6 +26,7 @@
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -47,7 +48,6 @@
   "dependencies": {
     "@prisma/client": "^6.17.1",
     "bcrypt": "^6.0.0",
-    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.17.1",

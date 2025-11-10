@@ -14,9 +14,6 @@ importers:
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
-      dotenv:
-        specifier: ^17.2.3
-        version: 17.2.3
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -60,6 +57,9 @@ importers:
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       eslint:
         specifier: ^9.37.0
         version: 9.37.0(jiti@2.6.1)
