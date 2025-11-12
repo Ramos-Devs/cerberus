@@ -1,4 +1,4 @@
-import { getRequiredEnv } from '../../src/config';
+import { getRequiredEnv } from "../../../src/config";
 
 describe('Environment variable validation', () => {
   const OLD_ENV = process.env;
