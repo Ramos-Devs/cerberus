@@ -90,7 +90,7 @@ describe('User registration failed', () => {
       ['email: string'],
     ],
   ])('should return an error when unique %s', async (
-    _msg: string, 
+    _case: string, 
     fieldName: string, 
     expectedInvalidFields: string[],
   ) => {
@@ -167,7 +167,7 @@ describe('User registration failed', () => {
       ['password: string'],
     ],
   ])('should return an error when the required %s', async (
-    _msg: string, 
+    _case: string, 
     payload: Record<string, any>, 
     expectedInvalidFields: string[],
   ) => {
@@ -242,7 +242,7 @@ describe('User registration failed', () => {
       },
     ],
   ])('should return an error when %s', async (
-    _msg,
+    _case,
     payload: Record<string, any>, 
   ) => {
     const response = await request(app)

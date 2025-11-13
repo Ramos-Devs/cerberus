@@ -7,7 +7,7 @@ test.each([
   ['username', 'username-example'],
   ['email', 'example@test.com'],
 ])('getUserByIdentifier should return user data when using %s', async (
-  _field,
+  _case,
   identifier,
 ) => {
   const { userData } = await userDefaultHelper();

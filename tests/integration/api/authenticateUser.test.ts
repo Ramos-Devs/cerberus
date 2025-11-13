@@ -13,7 +13,7 @@ describe('User authentication successful', () => {
     ['username', 'username-example'],
     ['email', 'example@test.com'],
   ])('should return data when credentials are valid using %s', async (
-    _field, 
+    _case, 
     identifier,
   ) => {
     const { userData, password } = await userDefaultHelper();
@@ -95,7 +95,7 @@ describe('User authentication failed', () => {
       ['user: string', 'password: string'],
     ],
   ])('should return an error when the required %s', async (
-    _msg: string,
+    _case: string,
     payload: Record<string, any>,
     expectedInvalidFields: string[],
   ) => {
@@ -220,7 +220,7 @@ describe('User authentication failed', () => {
       ['password: string'],
     ],
   ])('should return an error when %s', async (
-    _msg: string, 
+    _case: string, 
     payload: Record<string, any>, 
     expectedInvalidFields: string[],
   ) => {
