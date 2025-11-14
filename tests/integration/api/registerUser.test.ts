@@ -16,11 +16,11 @@ describe('User registration successful', () => {
     const response = await request(app)
       .post(URL_ENDPOINT)
       .send({
-      username: 'test.example',
-      email: 'test@example.com',
-      displayName: userData.displayName,
-      password: 'password-example',
-    });
+        username: 'test.example',
+        email: 'test@example.com',
+        displayName: userData.displayName,
+        password: 'password-example',
+      });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ 

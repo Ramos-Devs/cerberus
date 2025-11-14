@@ -5,6 +5,7 @@ import { PrismaClientKnownRequestError } from '../../generated/prisma/runtime/li
 import z from 'zod';
 import { formatErrorResponse } from '../utils/formatResponse';
 import { ResponseData } from '../types/response';
+import { convertHashPassword } from '../utils/bcryptsPassword';
 
 const UserSchema = z.object({
   username: z.string().min(1, 'The "username" field is required and must be a non-empty string.'),
@@ -43,11 +44,13 @@ export const resolveRegisterUser = async (
 
   let userObj;
 
-  try {
-    const userType = UserType.USER;
+  const hashedPassword = await convertHashPassword(parsed.data.password);
+  const userType = UserType.USER;
 
+  try {
     userObj = await createNewUser({
       ...parsed.data,
+      password: hashedPassword,
       userType,
     });
   } catch (err) {
